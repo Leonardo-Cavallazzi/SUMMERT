@@ -27,6 +27,8 @@
     --glass:rgba(22,33,45,.55);--glass-brd:rgba(255,255,255,.08);--sheen:rgba(255,255,255,.14);
     --shadow-sm:0 1px 2px rgba(0,0,0,.35);--shadow:0 4px 16px rgba(0,0,0,.45);--shadow-lg:0 18px 55px rgba(0,0,0,.62);}
   *{box-sizing:border-box}html,body{margin:0;height:100%}
+  body,.card,.dockpanel,.btn,#panel{transition:background-color .35s ease,color .35s ease,border-color .35s ease}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
   body{font-family:var(--sans);color:var(--ink);background:radial-gradient(900px 520px at 6% -10%,rgba(123,108,255,.16),transparent 60%),radial-gradient(860px 480px at 106% 2%,rgba(73,150,255,.13),transparent 55%),radial-gradient(760px 480px at 52% 114%,rgba(255,90,72,.07),transparent 55%),var(--bg);display:grid;grid-template-rows:auto 1fr;height:100dvh;overflow:hidden}
   header{display:flex;align-items:center;gap:.7rem;padding:.5rem 1rem;background:linear-gradient(180deg,#173445,#0f2733);z-index:30;position:relative}
   header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:repeating-linear-gradient(90deg,var(--poppy) 0 18px,transparent 18px 26px),linear-gradient(90deg,var(--sun),transparent)}
@@ -56,11 +58,11 @@
   .btn.on{background:var(--grad);color:#fff;border-color:transparent}
   .iconbtn{padding:.48rem .62rem}
 
-  main{display:grid;grid-template-columns:var(--panelw,420px) 8px 1fr;min-height:0}
-  #panel{overflow-y:auto;overflow-x:hidden;min-height:0;padding:.9rem .9rem 1.1rem;display:flex;flex-direction:column;gap:.9rem;scrollbar-gutter:stable}
+  main{position:relative;min-height:0}
+  #panel{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;padding:.9rem .9rem 1.4rem;scrollbar-gutter:stable;display:flex;flex-direction:column;gap:.9rem}
   #panel::-webkit-scrollbar{width:11px}#panel::-webkit-scrollbar-thumb{background:#cfd6cc;border-radius:7px;border:3px solid transparent;background-clip:padding-box}
-  #resizer{cursor:col-resize;position:relative}#resizer::after{content:"";position:absolute;inset:0 3px;border-radius:3px;background:var(--line)}#resizer:hover::after{background:var(--lav)}
-  #mapwrap{position:relative;min-height:0}#map{position:absolute;inset:0}
+  #resizer{display:none}
+  #mapwrap{position:absolute;inset:0;z-index:0}#map{position:absolute;inset:0}
 
   .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-sm);overflow:hidden;border-left:4px solid var(--accent,var(--lav));display:flex;flex-direction:column;flex:none;transition:box-shadow .18s}
   .card:hover{box-shadow:var(--shadow)}
@@ -217,7 +219,7 @@
   .legrow .lg-n{flex:1;font-size:.74rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .legrow .lg-vis{accent-color:var(--poppy)}
   .legrow .btn.mini{padding:.1rem .4rem;font-size:.6rem}
-  .elevwrap{position:relative}.elvtip{position:absolute;top:2px;background:var(--ink);color:#fff;font:600 .68rem var(--mono);padding:.15rem .45rem;border-radius:6px;pointer-events:none;display:none;transform:translateX(-50%);white-space:nowrap}
+  .elevwrap{position:relative}.elvtip{position:absolute;top:2px;background:#12202c;color:#fff;border:1px solid rgba(255,255,255,.15);font:600 .68rem var(--mono);padding:.15rem .45rem;border-radius:6px;pointer-events:none;display:none;transform:translateX(-50%);white-space:nowrap}
   svg.elev{cursor:crosshair}
   /* inventario */
   .team{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.5rem}
@@ -269,19 +271,50 @@
   /* mobile command bar (hidden on desktop) */
   #mobilebar{display:none}
 
-  @media (max-width:860px){
-    main{display:flex;flex-direction:column;height:100%}
-    #mapwrap{order:-1;height:42dvh;flex:none}
-    #resizer{display:none}
-    #panel{flex:1 1 auto;min-height:0;width:100%}
-    .rz{height:auto;max-height:50vh;resize:none}
+  /* ===== v11 fusion: command rail + drawer ===== */
+  #railbar{position:absolute;left:0;top:0;bottom:0;width:66px;z-index:500;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;background:var(--glass);backdrop-filter:blur(16px) saturate(1.35);-webkit-backdrop-filter:blur(16px) saturate(1.35);border-right:1px solid var(--glass-brd);box-shadow:2px 0 18px rgba(0,0,0,.08)}
+  .rail-btn{width:54px;height:52px;border:1px solid transparent;background:none;color:var(--muted);border-radius:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform .14s cubic-bezier(.34,1.4,.5,1),background .16s,color .16s,box-shadow .16s}
+  .rail-btn em{font-style:normal;font-size:.53rem;font-weight:700;letter-spacing:.01em}
+  .rail-btn:hover{background:var(--surface-2);color:var(--ink);transform:translateY(-1px)}
+  .rail-btn.on{background:var(--grad);color:#fff;box-shadow:0 6px 16px rgba(91,124,255,.4)}
+  .rail-btn.tgl{height:44px}.rail-btn.tgl.on{background:var(--grad);color:#fff}
+  .rail-add svg{background:var(--grad);color:#fff;border-radius:11px;padding:4px;box-shadow:0 5px 14px rgba(91,124,255,.45)}
+  .rail-add.on{background:none!important;box-shadow:none!important}.rail-add.on svg{background:rgba(255,255,255,.28)}
+  .rail-sp{flex:1}
+  #drawer{position:absolute;left:66px;top:0;bottom:0;width:362px;max-width:calc(100vw - 84px);z-index:480;background:var(--surface);border-right:1px solid var(--line);box-shadow:var(--shadow-lg);transform:translateX(-103%);transition:transform .36s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column}
+  #drawer.open{transform:translateX(0)}
+  #drawerClose{position:absolute;top:9px;right:9px;z-index:5;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;font-size:.85rem;line-height:1;box-shadow:var(--shadow-sm)}
+  #drawerClose:hover{background:var(--surface-2);color:var(--ink)}
+  #panel > .card{display:none;animation:viewIn .3s ease}
+  #panel > .card.active{display:flex}
+  @keyframes viewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .card>.h{cursor:default}.card>.h .chev{display:none}
+  #card-detail .dh{display:flex;align-items:center;justify-content:space-between;padding:.5rem .7rem;border-bottom:1px solid var(--line)}
+  #card-detail .dh .t{font-family:var(--disp);font-weight:700}
+  .subtabs{display:flex;gap:.25rem;padding:.55rem .6rem 0}
+  .subtabs button{flex:1;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);border-radius:9px;padding:.38rem;font:700 .74rem var(--sans);cursor:pointer;transition:.15s}
+  .subtabs button:hover{color:var(--ink)}.subtabs button.on{background:var(--grad);color:#fff;border-color:transparent}
+  .dockbody{padding:.7rem .8rem 1rem}
+  .leaflet-top.leaflet-left{margin-left:74px}
+  /* skeleton shimmer */
+  .skel{position:relative;overflow:hidden;background:var(--surface-2);border-radius:8px;min-height:14px}
+  .skel::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--ink) 8%,transparent),transparent);animation:shimmer 1.2s infinite}
+  @keyframes shimmer{100%{transform:translateX(100%)}}
+  .skel-row{height:12px;margin:.4rem 0;border-radius:6px}
 
+  @media (max-width:860px){
+    #railbar{display:none}
+    #mapwrap{inset:0}
+    .leaflet-top.leaflet-left{margin-left:0}
+    #drawer{left:0;right:0;top:auto;bottom:0;width:100%;max-width:none;height:76dvh;border-right:none;border-top:1px solid var(--line);border-radius:20px 20px 0 0;transform:translateY(103%);box-shadow:0 -16px 46px rgba(0,0,0,.32)}
+    #drawer.open{transform:translateY(0)}
+    #drawer::before{content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);width:40px;height:4px;border-radius:3px;background:var(--line)}
+    #panel{padding:1rem .9rem 1.4rem}
+    .rz{height:auto;max-height:46vh;resize:none}
     #mobilebar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:900;justify-content:space-around;align-items:center;padding:.35rem .4rem calc(.35rem + env(safe-area-inset-bottom));background:var(--glass);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);border-top:1px solid var(--glass-brd);box-shadow:0 -6px 24px rgba(0,0,0,.18)}
     #mobilebar button{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:var(--muted);font:600 .58rem var(--sans);cursor:pointer;padding:.2rem .3rem}
     #mobilebar button.active{color:var(--lav)}
     #mobilebar .mb-add{background:var(--grad);color:#fff;width:48px;height:48px;border-radius:50%;justify-content:center;box-shadow:0 6px 16px rgba(91,124,255,.5);margin-top:-14px}
-    #panel{padding-bottom:5.2rem}
-    .dockpanel{width:82vw;max-width:320px}
   }
 </style>
 </head>
@@ -297,7 +330,21 @@
 </header>
 
 <main>
-  <section id="panel">
+  <nav id="railbar">
+    <button class="rail-btn" data-view="routes" title="Percorsi"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.2 5.3-5.3 2.2 2.2-5.3 5.3-2.2Z"/></svg><em>Percorsi</em></button>
+    <button class="rail-btn" data-view="places" title="Luoghi"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 21s7-6.4 7-11a7 7 0 1 0-14 0c0 4.6 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg><em>Luoghi</em></button>
+    <button class="rail-btn rail-add" data-view="add" title="Aggiungi luogo"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><em>Aggiungi</em></button>
+    <button class="rail-btn" data-view="budget" title="Budget di gruppo"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4"/></svg><em>Budget</em></button>
+    <button class="rail-btn" data-view="inv" title="Inventario"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 7h16v13H4zM4 7l2-3h12l2 3M9 11h6"/></svg><em>Inventario</em></button>
+    <button class="rail-btn" data-view="detail" title="Dettagli: tappa, percorso, calendario"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M9 9.5v10"/></svg><em>Dettagli</em></button>
+    <div class="rail-sp"></div>
+    <button class="rail-btn tgl" id="btnHeat" title="Heatmap"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></svg></button>
+    <button class="rail-btn tgl" id="btnGps" title="GPS live"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="6.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></svg></button>
+    <button class="rail-btn tgl" id="btnFitRail" title="Centra tutto"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M20 9V5.5A1.5 1.5 0 0 0 18.5 4H15M4 15v3.5A1.5 1.5 0 0 0 5.5 20H9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15"/></svg></button>
+  </nav>
+  <aside id="drawer">
+    <button id="drawerClose" title="Chiudi pannello">✕</button>
+    <section id="panel">
     <div class="card acc-lav collapsible" id="card-routes">
       <div class="h"><span class="lft"><span class="chev">▶</span><span class="t">Percorsi</span></span><button class="btn mini" id="btnRouteNew">＋ Nuovo</button></div>
       <div class="combined-bar" id="combinedBar"></div>
@@ -345,26 +392,17 @@
         </form>
       </div>
     </div>
+    <div class="card acc-lav" id="card-detail">
+      <div class="subtabs" id="detailTabs"><button data-dock="stop" class="on">Tappa</button><button data-dock="trip">Percorso</button><button data-dock="cal">Calendario</button></div>
+      <div class="dh"><span class="t" id="dockTitle">Tappa</span></div>
+      <div class="dockbody" id="dockBody"></div>
+    </div>
     <div class="ver">Summer Road Trip · <span id="ver"></span></div>
   </section>
-
-  <div id="resizer"></div>
+  </aside>
 
   <div id="mapwrap">
     <div id="map"></div>
-    <div id="dock">
-      <div class="dockrail">
-        <button data-panel="stop" title="Tappa selezionata"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 21s7-6.4 7-11a7 7 0 1 0-14 0c0 4.6 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg></button>
-        <button data-panel="trip" title="Percorso: riepilogo, strade, altimetria"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.2 5.3-5.3 2.2 2.2-5.3 5.3-2.2Z"/></svg></button>
-        <button data-panel="cal" title="Calendario & meteo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg></button>
-        <button id="btnHeat" title="Heatmap"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></svg></button>
-        <button id="btnGps" title="GPS live"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="6.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></svg></button>
-      </div>
-      <div class="dockpanel" id="dockPanel">
-        <div class="dh"><span class="t" id="dockTitle">Riepilogo</span><button class="x" id="dockClose">✕</button></div>
-        <div class="dockbody" id="dockBody"></div>
-      </div>
-    </div>
   </div>
 </main>
 
@@ -398,11 +436,11 @@
 <div class="modal" id="catModal"><div class="box"><h3>Catalogo oggetti <button class="x" data-close>✕</button></h3><div class="body"><input id="catSearch" placeholder="Cerca oggetto…" style="margin-bottom:.6rem"><div id="catBody" style="max-height:52vh;overflow:auto"></div></div></div></div>
 
 <nav id="mobilebar">
-  <button data-card="card-places" title="Luoghi"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.4 7-11a7 7 0 1 0-14 0c0 4.6 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg><span>Luoghi</span></button>
-  <button data-card="card-routes" title="Percorsi"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.2 5.3-5.3 2.2 2.2-5.3 5.3-2.2Z"/></svg><span>Percorsi</span></button>
-  <button data-card="card-form" title="Aggiungi" class="mb-add"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
-  <button data-card="card-inv" title="Inventario"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16v13H4zM4 7l2-3h12l2 3M9 11h6"/></svg><span>Inventario</span></button>
-  <button data-card="card-budget" title="Budget"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4"/></svg><span>Budget</span></button>
+  <button data-view="places" title="Luoghi"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.4 7-11a7 7 0 1 0-14 0c0 4.6 7 11 7 11Z"/><circle cx="12" cy="10" r="2.4"/></svg><span>Luoghi</span></button>
+  <button data-view="routes" title="Percorsi"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.2 5.3-5.3 2.2 2.2-5.3 5.3-2.2Z"/></svg><span>Percorsi</span></button>
+  <button data-view="add" title="Aggiungi" class="mb-add"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button data-view="inv" title="Inventario"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16v13H4zM4 7l2-3h12l2 3M9 11h6"/></svg><span>Inventario</span></button>
+  <button data-view="budget" title="Budget"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4"/></svg><span>Budget</span></button>
 </nav>
 
 <div class="toast" id="toast"></div>
@@ -412,7 +450,7 @@
 <script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 <script>
 "use strict";
-const APP_VERSION = "v10 · Notte Riviera";
+const APP_VERSION = "v11 · Plancia";
 const TYPES = [
   ["Animali","🦅","#8a6d3b","#f0e7d6"],["Gola","🏞️","#2f8f8f","#dcefee"],["Fiume","🚣","#2f7fa0","#dbeaf2"],
   ["Cascata","💧","#3f86c6","#dde9f6"],["Lago","🌊","#2ba0aa","#d9f0f1"],["Mare","⛵","#2e8fb8","#dcecf5"],
@@ -429,9 +467,9 @@ const ROUTE_COLORS = ["#d23f2c", "#1f6488", "#6a8f4a", "#e2a72c", "#b1567f", "#2
 const routeColor = (i) => ROUTE_COLORS[i % ROUTE_COLORS.length];
 const WCODE = { 0: "sereno ☀️", 1: "poco nuvoloso 🌤️", 2: "variabile ⛅", 3: "coperto ☁️", 45: "nebbia 🌫️", 48: "nebbia 🌫️", 51: "pioviggine 🌦️", 61: "pioggia 🌧️", 63: "pioggia 🌧️", 65: "pioggia forte 🌧️", 80: "rovesci 🌦️", 95: "temporale ⛈️" };
 
-let state = { v: 6, stops: [], routes: [], activeRouteId: null, expandedRouteId: null, people: 5, panelw: 420, collapsed: {}, combined: false, fuel: { cons: 7, price: 1.85 }, team: [], items: [], baseMap: "Voyager", theme: "dark" };
+let state = { v: 6, stops: [], routes: [], activeRouteId: null, expandedRouteId: null, people: 5, panelw: 420, collapsed: {}, combined: false, fuel: { cons: 7, price: 1.85 }, team: [], items: [], baseMap: "Voyager", theme: "light" };
 let computed = {}, editingId = null, formTags = new Set(), formRating = 0, formPhotos = [];
-let ui = { search: "", filterTag: "", sortBy: "manual", dock: null, selectedStopId: null, heat: false, calY: null, calM: null, calDay: null };
+let ui = { search: "", filterTag: "", sortBy: "manual", view: null, dock: null, selectedStopId: null, heat: false, calY: null, calM: null, calDay: null };
 let undoStack = [], map, markersLayer, routeLayer, heatLayer = null, gpsMarker = null, gpsWatch = null, deferredInstall = null;
 
 const $ = (id) => document.getElementById(id);
@@ -514,7 +552,7 @@ function refreshMap() {
   if (ui.heat) { if (heatLayer) map.removeLayer(heatLayer); heatLayer = L.heatLayer(heatPts, { radius: 32, blur: 22, maxZoom: 11 }); heatLayer.addTo(map); } else if (heatLayer) { map.removeLayer(heatLayer); heatLayer = null; }
 }
 function fitToExpanded() { const r = expandedRoute(); const pts = (state.combined || !r) ? state.stops : r.stopIds.map(byId).filter(Boolean); if (pts.length) map.fitBounds(L.latLngBounds(pts.map((s) => [s.lat, s.lng])).pad(0.22), { maxZoom: 12 }); }
-function selectStop(id) { ui.selectedStopId = id; openDock("stop"); refreshMap(); }
+function selectStop(id) { ui.selectedStopId = id; ui.dock = "stop"; openView("detail"); refreshMap(); }
 
 /* ---- routing ---- */
 async function computeRoute(r) {
@@ -724,8 +762,19 @@ function renderPlaces() {
 }
 
 /* ---- DOCK ---- */
-function openDock(panel) { ui.dock = panel; document.querySelectorAll(".dockrail button[data-panel]").forEach((b) => b.classList.toggle("on", b.dataset.panel === panel)); $("dockPanel").classList.add("show"); renderDock(); if (map) setTimeout(() => map.invalidateSize(), 60); }
-function closeDock() { ui.dock = null; document.querySelectorAll(".dockrail button[data-panel]").forEach((b) => b.classList.remove("on")); $("dockPanel").classList.remove("show"); if (map) setTimeout(() => map.invalidateSize(), 60); }
+function openView(v) { ui.view = v; $("drawer").classList.add("open");
+  document.querySelectorAll("#panel > .card").forEach((c) => c.classList.remove("active"));
+  const M = { routes: "card-routes", places: "card-places", add: "card-form", budget: "card-budget", inv: "card-inv", detail: "card-detail" };
+  const el = document.getElementById(M[v]); if (el) { el.classList.add("active"); el.scrollTop = 0; }
+  document.querySelectorAll("#railbar .rail-btn[data-view]").forEach((b) => b.classList.toggle("on", b.dataset.view === v));
+  document.querySelectorAll("#mobilebar button[data-view]").forEach((b) => b.classList.toggle("active", b.dataset.view === v));
+  if (v === "detail") { if (!ui.dock) ui.dock = "stop"; renderDock(); syncSubtabs(); }
+  if (map) setTimeout(() => map.invalidateSize(), 240);
+}
+function closeDrawer() { ui.view = null; $("drawer").classList.remove("open"); document.querySelectorAll("#railbar .rail-btn[data-view],#mobilebar button[data-view]").forEach((b) => b.classList.remove("on", "active")); if (map) setTimeout(() => map.invalidateSize(), 240); }
+function syncSubtabs() { document.querySelectorAll("#detailTabs button").forEach((b) => b.classList.toggle("on", b.dataset.dock === ui.dock)); }
+function openDock(panel) { ui.dock = panel; openView("detail"); }
+function closeDock() { closeDrawer(); }
 function renderDock() { if (!ui.dock) return; const map0 = { stop: ["Tappa", dockStop], trip: ["Percorso", dockTrip], cal: ["Calendario & Meteo", dockCalPlus] }; const [title, fn] = map0[ui.dock] || map0.trip; $("dockTitle").textContent = title; $("dockBody").innerHTML = fn(); const post = fn.post; if (post) post(); }
 function dockSummary() { const r = expandedRoute(); const T = routeTotals(r); return `<div style="font-family:var(--disp);font-weight:600;margin-bottom:.4rem">${r ? escapeHtml(r.name) : "Nessun percorso"}</div><div class="fgrid">${[["tappe", T.n], ["km", fmtKm(T.dist) + (T.est ? "*" : "")], ["guida", T.dur ? fmtDur(T.dur) : "—"], ["€ tot", T.cost + T.fuel], ["ore", T.visit || "—"], ["notti", T.nights]].map(([l, v]) => `<div class="fc"><b>${v}</b><span>${l}</span></div>`).join("")}</div>`; }
 function dockStop() {
@@ -774,7 +823,7 @@ dockCalPlus.post = function () { if (dockCalendar.post) dockCalendar.post(); };
 
 /* ---- meteo (best-effort) ---- */
 async function loadWeather(id) {
-  const s = byId(id); if (!s) return; const box = $("wxBox"); box.innerHTML = "Carico…";
+  const s = byId(id); if (!s) return; const box = $("wxBox"); box.innerHTML = '<div class="skel skel-row" style="width:80%"></div><div class="skel skel-row" style="width:55%"></div>';
   const month = (s.arrival ? parseInt(s.arrival.slice(5, 7), 10) : 8);
   try {
     const fc = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${s.lat}&longitude=${s.lng}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&forecast_days=3&timezone=auto`)).json();
@@ -791,7 +840,7 @@ async function loadWeather(id) {
 
 /* ---- altimetria (best-effort) ---- */
 async function loadElevation() {
-  const r = expandedRoute(); if (!r) return; const box = $("elevBox"); box.innerHTML = "Calcolo…";
+  const r = expandedRoute(); if (!r) return; const box = $("elevBox"); box.innerHTML = '<div class="skel skel-row" style="width:100%;height:70px"></div><div class="skel skel-row" style="width:60%"></div>';
   let path = (computed[r.id] && computed[r.id].geom) || r.stopIds.map(byId).filter(Boolean).map((s) => [s.lat, s.lng]);
   if (path.length < 2) { box.innerHTML = `<div class="empty">Percorso troppo corto.</div>`; return; }
   const N = 60; const step = Math.max(1, Math.floor(path.length / N)); const samp = path.filter((_, i) => i % step === 0).slice(0, 100);
@@ -879,8 +928,8 @@ function showGalleryImg() { const multi = gallery.photos.length > 1; $("lightbox
 function galMove(d) { if (!gallery.photos.length) return; gallery.i = (gallery.i + d + gallery.photos.length) % gallery.photos.length; showGalleryImg(); }
 
 /* ---- collapsible ---- */
-function expandCard(id) { const c = $(id); if (c) { c.classList.remove("collapsed"); state.collapsed[id] = false; persistSoon(); } }
-function setupCollapsibles() { document.querySelectorAll(".card.collapsible").forEach((card) => { const id = card.id; if (state.collapsed && state.collapsed[id]) card.classList.add("collapsed"); card.querySelector(".h").addEventListener("click", (e) => { if (e.target.closest("button")) return; card.classList.toggle("collapsed"); state.collapsed[id] = card.classList.contains("collapsed"); persistSoon(); }); }); }
+function expandCard(id) { const V = { "card-form": "add", "card-routes": "routes", "card-places": "places", "card-budget": "budget", "card-inv": "inv", "card-detail": "detail" }; openView(V[id] || "routes"); }
+function setupCollapsibles() { document.querySelectorAll(".card").forEach((c) => c.classList.remove("collapsed")); }
 
 /* ---- form ---- */
 function buildTagChips() { $("f_tags").innerHTML = TYPES.map(([n, e]) => `<span class="chip" data-tag="${escapeAttr(n)}">${e} ${n}</span>`).join(""); $("f_tags").querySelectorAll(".chip").forEach((ch) => ch.addEventListener("click", () => { const t = ch.dataset.tag; if (formTags.has(t)) formTags.delete(t); else formTags.add(t); syncTagChips(); })); }
@@ -912,7 +961,7 @@ const TAG_SPLIT = { "Gola / Fiume": ["Gola", "Fiume"], "Montagna / Escursione": 
 function migStop(s) { s.id = s.id || uid(); let tags = s.tags || (s.type ? [s.type] : []); const nt = []; tags.forEach((t) => { if (TAG_SPLIT[t]) TAG_SPLIT[t].forEach((x) => { if (!nt.includes(x)) nt.push(x); }); else if (!nt.includes(t)) nt.push(t); }); s.tags = nt; if (s.rating == null) s.rating = 0; if (!s.links) s.links = []; if (!s.photos) s.photos = []; if (s.orario == null) s.orario = ""; if (!s.costs) s.costs = { food: 0, culture: 0, other: (+s.cost || 0) }; delete s.cost; delete s.type; return s; }
 function migRoute(r) { r.opts = r.opts || { avoidMotorway: false, avoidToll: false }; r.stopIds = r.stopIds || []; if (r.notes == null) r.notes = ""; return r; }
 function fixActive(d) { if (!d.routes.length) return; if (!d.activeRouteId || !d.routes.find((r) => r.id === d.activeRouteId)) d.activeRouteId = d.routes[0].id; if (d.expandedRouteId && !d.routes.find((r) => r.id === d.expandedRouteId)) d.expandedRouteId = null; }
-function normalize(d) { if (!d) return null; if (!d.collapsed) d.collapsed = {}; if (d.combined == null) d.combined = false; if (!d.fuel) d.fuel = { cons: 7, price: 1.85 }; if (!d.people) d.people = 5; if (!d.team) d.team = []; if (!d.items) d.items = []; if (!d.baseMap) d.baseMap = "Voyager"; if (!d.theme) d.theme = "dark"; if (d.routes) { d.stops = (d.stops || []).map(migStop); d.routes.forEach(migRoute); d.v = 6; d.expandedRouteId = d.expandedRouteId || null; fixActive(d); return d; } const stops = (d.stops || []).map(migStop); const r = { id: uid(), name: "Percorso 1", stopIds: stops.map((s) => s.id), opts: d.opts || { avoidMotorway: false, avoidToll: false }, notes: "" }; return { v: 6, stops, routes: [r], activeRouteId: r.id, expandedRouteId: null, people: 5, panelw: 420, collapsed: {}, combined: false, fuel: { cons: 7, price: 1.85 }, team: [], items: [], baseMap: "Voyager", theme: "dark" }; }
+function normalize(d) { if (!d) return null; if (!d.collapsed) d.collapsed = {}; if (d.combined == null) d.combined = false; if (!d.fuel) d.fuel = { cons: 7, price: 1.85 }; if (!d.people) d.people = 5; if (!d.team) d.team = []; if (!d.items) d.items = []; if (!d.baseMap) d.baseMap = "Voyager"; if (!d.theme) d.theme = "light"; if (d.routes) { d.stops = (d.stops || []).map(migStop); d.routes.forEach(migRoute); d.v = 6; d.expandedRouteId = d.expandedRouteId || null; fixActive(d); return d; } const stops = (d.stops || []).map(migStop); const r = { id: uid(), name: "Percorso 1", stopIds: stops.map((s) => s.id), opts: d.opts || { avoidMotorway: false, avoidToll: false }, notes: "" }; return { v: 6, stops, routes: [r], activeRouteId: r.id, expandedRouteId: null, people: 5, panelw: 420, collapsed: {}, combined: false, fuel: { cons: 7, price: 1.85 }, team: [], items: [], baseMap: "Voyager", theme: "light" }; }
 function ensureRoute() { if (!state.routes.length) { const r = { id: uid(), name: "Percorso 1", stopIds: [], opts: { avoidMotorway: false, avoidToll: false }, notes: "" }; state.routes.push(r); state.activeRouteId = r.id; } }
 function loadLocal() { try { const raw = localStorage.getItem(LS_KEY) || localStorage.getItem("sudfrancia-planner-v2") || localStorage.getItem("sudfrancia-planner-v1"); if (raw) { const n = normalize(JSON.parse(raw)); if (n) state = n; } } catch (e) {} }
 
@@ -963,7 +1012,7 @@ function booklet(r) {
 }
 
 /* ---- resizer ---- */
-function setupResizer() { const rz = $("resizer"); let dragging = false; const move = (x) => { const w = Math.min(760, Math.max(320, x - 4)); document.documentElement.style.setProperty("--panelw", w + "px"); state.panelw = w; if (map) map.invalidateSize(); }; rz.addEventListener("pointerdown", (e) => { dragging = true; rz.setPointerCapture(e.pointerId); }); rz.addEventListener("pointermove", (e) => { if (dragging) move(e.clientX); }); rz.addEventListener("pointerup", () => { dragging = false; persist(); }); }
+function setupResizer() { const rz = $("resizer"); if (!rz) return; let dragging = false; const move = (x) => { const w = Math.min(760, Math.max(320, x - 4)); document.documentElement.style.setProperty("--panelw", w + "px"); state.panelw = w; if (map) map.invalidateSize(); }; rz.addEventListener("pointerdown", (e) => { dragging = true; rz.setPointerCapture(e.pointerId); }); rz.addEventListener("pointermove", (e) => { if (dragging) move(e.clientX); }); rz.addEventListener("pointerup", () => { dragging = false; persist(); }); }
 
 /* ---- util ---- */
 function css(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim() || "#e5843f"; }
@@ -985,7 +1034,7 @@ async function boot() {
   buildTagChips(); buildStars(); buildTypeFilter(); initMap(); setupResizer();
   let fromHash = false;
   if (location.hash.length > 1) { try { state = await decodeState(decodeURIComponent(location.hash.slice(1))); fromHash = true; } catch (e) { loadLocal(); } } else loadLocal();
-  ensureRoute(); if (!state.collapsed) state.collapsed = {}; if (!state.theme) state.theme = "dark"; applyTheme();
+  ensureRoute(); if (!state.collapsed) state.collapsed = {}; if (!state.theme) state.theme = "light"; applyTheme();
   if (!fromHash && !Object.keys(state.collapsed).length) state.collapsed = { "card-budget": true, "card-inv": true, "card-form": true };
   if (state.panelw) document.documentElement.style.setProperty("--panelw", state.panelw + "px");
   clearForm(); setupCollapsibles(); renderAll(); fitToExpanded();
@@ -1003,13 +1052,16 @@ async function boot() {
   $("sortBy").addEventListener("change", (e) => { ui.sortBy = e.target.value; renderPlaces(); });
   $("btnUndo").addEventListener("click", undo);
   $("btnTheme").addEventListener("click", () => { state.theme = state.theme === "light" ? "dark" : "light"; applyTheme(); persist(); });
-  document.querySelectorAll("#mobilebar button[data-card]").forEach((b) => b.addEventListener("click", () => { const id = b.dataset.card; ["card-routes","card-places","card-budget","card-inv","card-form"].forEach((cid) => { const c = document.getElementById(cid); if (c) c.classList.toggle("collapsed", cid !== id); state.collapsed[cid] = cid !== id; }); document.querySelectorAll("#mobilebar button").forEach((x) => x.classList.remove("active")); b.classList.add("active"); const t = document.getElementById(id); if (t) t.scrollIntoView({ behavior: "smooth", block: "start" }); persistSoon(); }));
+  document.querySelectorAll("#mobilebar button[data-view]").forEach((b) => b.addEventListener("click", () => { const v = b.dataset.view; if (ui.view === v) closeDrawer(); else openView(v); }));
   const cs = document.getElementById("catSearch"); if (cs) cs.addEventListener("input", (e) => { ui.catSearch = e.target.value; renderCatalog(); });
   $("btnFit").addEventListener("click", () => { if (state.stops.length) map.fitBounds(L.latLngBounds(state.stops.map((s) => [s.lat, s.lng])).pad(0.2)); });
   $("btnRouteNew").addEventListener("click", (e) => { e.stopPropagation(); const n = prompt("Nome del nuovo percorso:", `Percorso ${state.routes.length + 1}`); if (n === null) return; snapshot(); const r = { id: uid(), name: n.trim() || `Percorso ${state.routes.length + 1}`, stopIds: [], opts: { avoidMotorway: false, avoidToll: false }, notes: "" }; state.routes.push(r); state.expandedRouteId = r.id; state.activeRouteId = r.id; persist(); renderAll(); });
 
-  document.querySelectorAll(".dockrail button[data-panel]").forEach((b) => b.addEventListener("click", () => { if (ui.dock === b.dataset.panel) closeDock(); else openDock(b.dataset.panel); }));
-  $("dockClose").addEventListener("click", closeDock);
+  document.querySelectorAll("#railbar .rail-btn[data-view]").forEach((b) => b.addEventListener("click", () => { const v = b.dataset.view; if (ui.view === v) closeDrawer(); else openView(v); }));
+  document.querySelectorAll("#detailTabs button").forEach((b) => b.addEventListener("click", () => { ui.dock = b.dataset.dock; renderDock(); syncSubtabs(); }));
+  $("drawerClose").addEventListener("click", closeDrawer);
+  $("btnFitRail").addEventListener("click", fitToExpanded);
+  if (window.innerWidth > 860) openView("routes");
   $("btnHeat").addEventListener("click", () => { ui.heat = !ui.heat; $("btnHeat").classList.toggle("on", ui.heat); refreshMap(); });
   $("btnGps").addEventListener("click", toggleGps);
 

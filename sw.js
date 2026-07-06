@@ -1,5 +1,5 @@
 /* Service worker – cache dell'app per uso offline. Bump CACHE per forzare aggiornamenti. */
-const CACHE = "srt-v10-1";
+const CACHE = "srt-v11-1";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (e) => {
